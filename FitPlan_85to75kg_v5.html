@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FitPlan">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a14">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230d0d1a'/><text y='.9em' font-size='72' x='12'>💪</text></svg>">
+<title>FitPlan — 85→75 kg</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0a14;--surface:#10101f;--card:#171726;--card2:#1e1e30;
+  --border:#2a2a42;--text:#f0eeff;--muted:#7878aa;--hint:#3a3a58;
+  --accent:#ff5f6d;--accent2:#ff9966;--danger:#ff4444;
+  --cardio:#4fc3f7;--cardio-bg:rgba(79,195,247,0.12);
+  --strength:#ff5f6d;--strength-bg:rgba(255,95,109,0.12);
+  --yoga:#b794f4;--yoga-bg:rgba(183,148,244,0.12);
+  --warmup:#ffa94d;--warmup-bg:rgba(255,169,77,0.12);
+  --rest-col:#4a4a6a;--rest-bg:rgba(74,74,106,0.2);
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;display:flex;flex-direction:column}
+
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 0.5s}
+#splash.gone{opacity:0;pointer-events:none}
+.splash-logo{font-family:'Fraunces',serif;font-style:italic;font-size:3.5rem;color:var(--accent);line-height:1}
+.splash-sub{font-size:0.78rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-top:0.5rem}
+.splash-ring{width:60px;height:60px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.9s linear infinite;margin-top:2.5rem;filter:drop-shadow(0 0 12px var(--accent))}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── HEADER ── */
+#header{background:var(--surface);border-bottom:1px solid var(--border);padding:0.7rem 1rem;display:flex;align-items:center;gap:0.75rem;flex-shrink:0}
+.header-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--card);border:none;color:var(--text);font-size:1.1rem;cursor:pointer;flex-shrink:0}
+.header-title{flex:1;min-width:0}
+.header-title-main{font-family:'Fraunces',serif;font-style:italic;font-size:1.1rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.header-title-sub{font-size:0.68rem;color:var(--muted);letter-spacing:0.04em}
+.header-prog{display:flex;align-items:center;gap:0.5rem;flex-shrink:0}
+.header-prog-ring{position:relative;width:38px;height:38px}
+.hpr-svg{transform:rotate(-90deg)}
+.hpr-bg{fill:none;stroke:var(--border);stroke-width:3}
+.hpr-fill{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset 0.5s;filter:drop-shadow(0 0 3px var(--accent))}
+.hpr-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:600;color:var(--accent)}
+
+/* ── PAGES ── */
+#pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;transition:transform 0.3s ease,opacity 0.3s}
+.page.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
+.page.slide-left{transform:translateX(-100%);opacity:0;pointer-events:none}
+
+/* ── HOME PAGE ── */
+.home-hero{padding:1.5rem 1rem 1.25rem;background:linear-gradient(160deg,#1a0a1f 0%,#10101f 40%,var(--bg) 100%)}
+.home-hero-title{font-family:'Fraunces',serif;font-style:italic;font-size:2rem;color:var(--text);line-height:1.1}
+.home-hero-title span{color:var(--accent)}
+.home-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-top:1.25rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.9rem 0.5rem;text-align:center}
+.stat-val{font-family:'Fraunces',serif;font-size:1.6rem;color:var(--accent);line-height:1;background:linear-gradient(135deg,#ff5f6d,#ff9966);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-lbl{font-size:0.6rem;color:var(--muted);letter-spacing:0.05em;text-transform:uppercase;margin-top:4px;line-height:1.2}
+
+.section-title{font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:1.25rem 1rem 0.6rem}
+.phase-tabs{display:flex;gap:0.4rem;padding:0 1rem 0.85rem;overflow-x:auto;scrollbar-width:none}
+.phase-tabs::-webkit-scrollbar{display:none}
+.ptab{padding:0.5rem 1.1rem;border-radius:20px;font-size:0.72rem;font-weight:500;letter-spacing:0.04em;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);white-space:nowrap;transition:all 0.2s;flex-shrink:0}
+.ptab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.week-list{padding:0 1rem 1.5rem;display:flex;flex-direction:column;gap:0.6rem}
+.week-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1rem;display:flex;align-items:center;gap:0.85rem;cursor:pointer;transition:all 0.2s;min-height:72px}
+.week-item:active{transform:scale(0.98);background:var(--card2)}
+.week-item.done{border-color:var(--accent)}
+.wi-num{width:46px;height:46px;border-radius:12px;background:var(--card2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;font-size:0.56rem;letter-spacing:0.06em;color:var(--muted);text-transform:uppercase;font-weight:500}
+.wi-num span{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--text);line-height:1;font-style:italic}
+.week-item.done .wi-num{background:linear-gradient(135deg,#ff5f6d,#ff9966);color:#fff}
+.week-item.done .wi-num span{color:#fff}
+.wi-info{flex:1;min-width:0}
+.wi-title{font-weight:600;font-size:0.92rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wi-meta{font-size:0.72rem;color:var(--muted);margin-top:3px}
+.wi-chevron{color:var(--hint);font-size:1rem;flex-shrink:0}
+.wi-kcal{font-size:0.68rem;font-weight:600;color:var(--accent);background:rgba(255,95,109,0.12);padding:3px 10px;border-radius:20px;white-space:nowrap;border:1px solid rgba(255,95,109,0.25)}
+
+/* ── WEEK DETAIL PAGE ── */
+.week-detail-header{padding:1rem;background:var(--surface);border-bottom:1px solid var(--border)}
+.wdh-phase{font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.wdh-title{font-family:'Fraunces',serif;font-style:italic;font-size:1.4rem;color:var(--text)}
+.wdh-chips{display:flex;gap:0.4rem;margin-top:0.6rem;flex-wrap:wrap}
+.wdh-chip{font-size:0.63rem;padding:3px 10px;border-radius:20px;background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+.wdh-chip.accent{background:var(--strength-bg);color:var(--accent);border-color:rgba(111,207,74,0.3)}
+
+.mark-done-btn{margin:1rem;padding:0.85rem;background:var(--card);border:2px solid var(--border);transition:all 0.25s;border-radius:12px;color:var(--muted);font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:600;letter-spacing:0.04em;cursor:pointer;width:calc(100% - 2rem);transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem}
+.mark-done-btn.done{background:linear-gradient(135deg,rgba(255,95,109,0.15),rgba(255,153,102,0.1));border-color:var(--accent);color:var(--accent)}
+
+.days-container{padding:0 1rem 2rem;display:flex;flex-direction:column;gap:0.75rem}
+
+/* ── DAY CARD ── */
+.day-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.day-card-header{padding:0.85rem 1rem;display:flex;align-items:center;gap:0.75rem;cursor:pointer}
+.day-card-header:active{background:var(--card2)}
+.dch-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dch-info{flex:1}
+.dch-day{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.dch-type{font-size:0.88rem;font-weight:600;color:var(--text)}
+.dch-meta{font-size:0.68rem;color:var(--muted);margin-top:1px}
+.dch-tag{font-size:0.6rem;padding:2px 8px;border-radius:10px;font-weight:500;flex-shrink:0}
+.dch-arrow{color:var(--hint);font-size:0.85rem;transition:transform 0.2s;flex-shrink:0}
+.day-card.open .dch-arrow{transform:rotate(180deg)}
+
+.day-card-body{display:none;border-top:1px solid var(--border)}
+.day-card.open .day-card-body{display:block}
+.day-card.rest .day-card-body{padding:0.75rem 1rem;font-size:0.82rem;color:var(--muted);font-style:italic}
+
+/* ── SECTION LABELS ── */
+.ex-section{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.75rem 1rem 0.25rem;color:var(--warmup);display:flex;align-items:center;gap:0.4rem}
+.ex-section.strength-label{color:var(--strength)}
+.ex-section.cardio-label{color:var(--cardio)}
+.ex-section.yoga-label{color:var(--yoga)}
+.ex-section::after{content:'';flex:1;height:1px;background:currentColor;opacity:0.2}
+
+/* ── EXERCISE ITEM ── */
+.ex-item{padding:0.75rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:0.75rem}
+.ex-item:last-child{border-bottom:none}
+.ex-check{width:26px;height:26px;border-radius:8px;border:2px solid var(--border);background:transparent;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;transition:all 0.2s;margin-top:2px}
+.ex-check.checked{background:linear-gradient(135deg,#ff5f6d,#ff9966);border-color:#ff5f6d;color:#fff}
+.ex-info{flex:1;min-width:0}
+.ex-name{font-weight:600;font-size:0.86rem;color:var(--text);line-height:1.3}
+.ex-sets{font-size:0.74rem;color:var(--muted);margin-top:2px}
+.ex-spec{font-size:0.72rem;color:var(--accent);margin-top:3px;font-weight:500}
+.ex-tip{font-size:0.7rem;color:var(--hint);margin-top:4px;line-height:1.5;font-style:italic}
+.ex-timer-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--muted);font-size:0.65rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;gap:1px;line-height:1}
+
+/* ── TIMER SHEET ── */
+#timer-sheet{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+#timer-sheet.show{opacity:1;pointer-events:all}
+.timer-panel{background:var(--surface);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:1.5rem 1.5rem 2.5rem;width:100%;max-width:480px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+#timer-sheet.show .timer-panel{transform:translateY(0)}
+.timer-label{text-align:center;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.timer-display{text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:5rem;color:var(--accent);line-height:1;margin:0.5rem 0}
+.timer-ring-wrap{display:flex;justify-content:center;margin:0.5rem 0 1.5rem}
+.timer-ring{transform:rotate(-90deg)}
+.tr-bg{fill:none;stroke:var(--border);stroke-width:6}
+.tr-fill{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 0.5s linear;filter:drop-shadow(0 0 6px var(--accent))}
+.timer-presets{display:flex;gap:0.5rem;justify-content:center;margin-bottom:1rem;flex-wrap:wrap}
+.tp-btn{padding:0.4rem 1rem;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Outfit',sans-serif;font-size:0.78rem;cursor:pointer;transition:all 0.15s}
+.tp-btn.on{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.timer-btns{display:flex;gap:0.75rem}
+.timer-action{flex:1;padding:0.9rem;border-radius:12px;border:none;font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer;transition:all 0.2s}
+.timer-action.primary{background:linear-gradient(135deg,#ff5f6d,#ff9966);color:#fff;border:none}
+.timer-action.secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+
+/* ── BOTTOM NAV ── */
+#bottom-nav{background:var(--surface);border-top:1px solid var(--border);padding:0.6rem 0 calc(0.65rem + env(safe-area-inset-bottom));display:flex;flex-shrink:0}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0.3rem;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:'Outfit',sans-serif;font-size:0.58rem;letter-spacing:0.05em;text-transform:uppercase;transition:color 0.2s}
+.bn-item.on{color:var(--accent)}
+.bn-icon{font-size:1.4rem;line-height:1;display:flex;align-items:center;justify-content:center}
+
+/* ── PROGRESS PAGE ── */
+.progress-hero{padding:1.5rem 1rem 1rem}
+.progress-big{font-family:'Fraunces',serif;font-style:italic;font-size:2.5rem;background:linear-gradient(135deg,#ff5f6d,#ff9966);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.prog-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;padding:0 1rem}
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.1rem}
+.prog-card-val{font-family:'Fraunces',serif;font-size:2rem;color:var(--text);line-height:1}
+.prog-card-lbl{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:6px}
+.weight-track{padding:1rem}
+.wt-label{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+.wt-input-row{display:flex;gap:0.5rem;margin-bottom:0.75rem}
+.wt-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.85rem;color:var(--text);font-family:'Outfit',sans-serif;font-size:1rem;outline:none;-webkit-appearance:none}
+.wt-input:focus{border-color:var(--accent)}
+.wt-save{padding:0.7rem 1.2rem;background:linear-gradient(135deg,#ff5f6d,#ff9966);border:none;border-radius:10px;color:#fff;font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:600;cursor:pointer}
+.wt-history{display:flex;flex-direction:column;gap:0.35rem;max-height:200px;overflow-y:auto}
+.wt-entry{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.75rem;background:var(--card);border-radius:8px;font-size:0.8rem}
+.wt-entry-date{color:var(--muted)}
+.wt-entry-val{font-weight:600;color:var(--accent)}
+.wt-entry-del{color:var(--hint);background:none;border:none;cursor:pointer;font-size:0.9rem;padding:2px 6px}
+
+.phase-bar-wrap{padding:1rem 1rem 0}
+.phase-bar-label{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-bottom:4px}
+.phase-bar-outer{height:8px;background:var(--card2);border-radius:99px;overflow:hidden;margin-bottom:0.75rem}
+.phase-bar-inner{height:100%;background:linear-gradient(90deg,#ff5f6d,#ff9966);border-radius:99px;transition:width 0.5s}
+
+/* ── INSTALL BANNER ── */
+#install-banner{background:var(--card);border:1px solid var(--border);border-radius:12px;margin:0 1rem 1rem;padding:0.85rem 1rem;display:none;align-items:center;gap:0.75rem}
+#install-banner.show{display:flex}
+.ib-text{flex:1;font-size:0.78rem;color:var(--muted);line-height:1.4}
+.ib-btn{padding:0.5rem 1rem;background:linear-gradient(135deg,#ff5f6d,#ff9966);border:none;border-radius:8px;color:#fff;font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap}
+
+/* ── WEIGHT CHART ── */
+.chart-wrap{padding:0 1rem 0.5rem;margin-top:0.5rem}
+.chart-title{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;display:flex;justify-content:space-between;align-items:center}
+.chart-legend{display:flex;gap:1rem}
+.chart-leg-item{display:flex;align-items:center;gap:5px;font-size:0.65rem;color:var(--muted)}
+.chart-leg-dot{width:10px;height:3px;border-radius:2px}
+.chart-svg-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 0.75rem 0.75rem;overflow:hidden}
+.chart-svg{width:100%;overflow:visible}
+.chart-grid-line{stroke:var(--border);stroke-width:0.5;stroke-dasharray:3,3}
+.chart-axis-label{font-size:9px;fill:var(--muted);font-family:'Outfit',sans-serif}
+.chart-week-label{font-size:8px;fill:var(--muted);font-family:'Outfit',sans-serif}
+.chart-expected-line{fill:none;stroke:#4fc3f7;stroke-width:2;stroke-dasharray:5,3;opacity:0.7}
+.chart-actual-line{fill:none;stroke:#ff5f6d;stroke-width:2.5}
+.chart-actual-dot{fill:#ff5f6d;stroke:#0a0a14;stroke-width:2}
+.chart-expected-dot{fill:#4fc3f7;stroke:#0a0a14;stroke-width:1.5;opacity:0.6}
+.chart-area{opacity:0.06}
+.chart-empty{text-align:center;padding:2rem;font-size:0.78rem;color:var(--muted);font-style:italic}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-logo">FitPlan</div>
+  <div class="splash-sub">85 → 75 kg · 16 Weeks</div>
+  <div class="splash-ring"></div>
+</div>
+
+<div id="header">
+  <button class="header-back" id="backBtn" style="display:none" onclick="goBack()">←</button>
+  <div class="header-title">
+    <div class="header-title-main" id="headerTitle">FitPlan</div>
+    <div class="header-title-sub" id="headerSub">85 → 75 kg · 16 Weeks</div>
+  </div>
+  <div class="header-prog">
+    <div class="header-prog-ring">
+      <svg class="hpr-svg" width="38" height="38" viewBox="0 0 38 38">
+        <circle class="hpr-bg" cx="19" cy="19" r="16"/>
+        <circle class="hpr-fill" id="progRing" cx="19" cy="19" r="16" stroke-dasharray="100.53" stroke-dashoffset="100.53"/>
+      </svg>
+      <div class="hpr-text" id="progPct">0%</div>
+    </div>
+  </div>
+</div>
+
+<div id="pages">
+  <!-- HOME -->
+  <div class="page" id="homePage">
+    <div class="home-hero">
+      <div class="home-hero-title">85 → <span>75 kg</span></div>
+      <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">4 months · Tue–Sat + selective Thu · Moderate</div>
+      <div class="home-stats">
+        <div class="stat-card">
+          <div class="stat-val" id="statDone">0</div>
+          <div class="stat-lbl">Weeks Done</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">16</div>
+          <div class="stat-lbl">Total Weeks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statKg">85</div>
+          <div class="stat-lbl">Current kg</div>
+        </div>
+      </div>
+    </div>
+    <div id="install-banner">
+      <div class="ib-text">📱 Opened from Gmail? Tap here to install as app</div>
+      <button class="ib-btn" onclick="showIOSInstall()">How →</button>
+    </div>
+    <div class="section-title">Training Phases</div>
+    <div class="phase-tabs" id="phaseTabs"></div>
+    <div class="week-list" id="weekList"></div>
+  </div>
+
+  <!-- WEEK DETAIL -->
+  <div class="page hidden" id="weekPage">
+    <div class="week-detail-header">
+      <div class="wdh-phase" id="wdPhase"></div>
+      <div class="wdh-title" id="wdTitle"></div>
+      <div class="wdh-chips" id="wdChips"></div>
+    </div>
+    <button class="mark-done-btn" id="markDoneBtn" onclick="toggleWeekDone()">
+      <span id="markDoneIcon">○</span> <span id="markDoneTxt">Mark Week Complete</span>
+    </button>
+    <div class="days-container" id="daysContainer"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="page hidden" id="progressPage">
+    <div class="progress-hero">
+      <div style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Overall Progress</div>
+      <div class="progress-big" id="progBig">0%</div>
+      <div style="font-size:0.8rem;color:var(--muted);margin-top:4px"><span id="progDone">0</span> of 16 weeks complete</div>
+    </div>
+
+    <div class="phase-bar-wrap" id="phaseBarWrap"></div>
+
+    <!-- Weight Chart -->
+    <div class="chart-wrap">
+      <div class="chart-title">
+        <span>Weight Tracker</span>
+        <div class="chart-legend">
+          <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#4fc3f7"></div>Expected</div>
+          <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#ff5f6d"></div>Actual</div>
+        </div>
+      </div>
+      <div class="chart-svg-wrap">
+        <div id="weightChart">
+          <div class="chart-empty">Log your weight to see it plotted against your expected progress</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prog-grid">
+      <div class="prog-card">
+        <div class="prog-card-val" id="pWeeksLeft">16</div>
+        <div class="prog-card-lbl">Weeks Left</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-card-val" id="pKcalBurnt">0</div>
+        <div class="prog-card-lbl">kcal Burnt (est)</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-card-val" id="pKgLost">0</div>
+        <div class="prog-card-lbl">kg Lost (tracked)</div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-card-val" id="pTarget">75</div>
+        <div class="prog-card-lbl">Target kg</div>
+      </div>
+    </div>
+
+    <div class="weight-track" style="padding-top:1.5rem">
+      <div class="wt-label">Weight Log</div>
+      <div class="wt-input-row">
+        <input class="wt-input" type="number" id="wtInput" placeholder="Enter kg (e.g. 84.5)" step="0.1" min="50" max="150">
+        <button class="wt-save" onclick="logWeight()">Log</button>
+      </div>
+      <div class="wt-history" id="wtHistory"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TIMER SHEET -->
+<div id="timer-sheet" onclick="closeTimerIfOutside(event)">
+  <div class="timer-panel">
+    <div class="timer-label" id="timerLabel">Rest Timer</div>
+    <div class="timer-ring-wrap">
+      <svg class="timer-ring" width="140" height="140" viewBox="0 0 140 140">
+        <circle class="tr-bg" cx="70" cy="70" r="60"/>
+        <circle class="tr-fill" id="timerRing" cx="70" cy="70" r="60" stroke-dasharray="376.99" stroke-dashoffset="0"/>
+      </svg>
+    </div>
+    <div class="timer-display" id="timerDisplay">1:00</div>
+    <div class="timer-presets">
+      <button class="tp-btn" onclick="setTimer(30)">30s</button>
+      <button class="tp-btn" onclick="setTimer(45)">45s</button>
+      <button class="tp-btn on" onclick="setTimer(60)">1 min</button>
+      <button class="tp-btn" onclick="setTimer(90)">90s</button>
+      <button class="tp-btn" onclick="setTimer(120)">2 min</button>
+    </div>
+    <div class="timer-btns">
+      <button class="timer-action secondary" onclick="closeTimer()">Close</button>
+      <button class="timer-action primary" id="timerBtn" onclick="toggleTimer()">Start</button>
+    </div>
+  </div>
+</div>
+
+<div id="bottom-nav">
+  <button class="bn-item on" id="bnHome" onclick="showPage('home')">
+    <div class="bn-icon">🏠</div><div>Home</div>
+  </button>
+  <button class="bn-item" id="bnProgress" onclick="showPage('progress')">
+    <div class="bn-icon">📈</div><div>Progress</div>
+  </button>
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+
+// Warm-up definitions per workout type
+const WARMUPS = {
+  cardio: [
+    {nm:'March in Place', sets:'2 min', tip:'Lift knees to hip height, swing arms naturally. Gets blood moving and warms the joints before any treadmill work.'},
+    {nm:'Leg Swings (front/back)', sets:'10 each leg', tip:'Hold a wall for balance. Swing leg forward and back in a controlled arc. Loosens hip flexors and hamstrings.'},
+    {nm:'Ankle Circles', sets:'10 each direction, each ankle', tip:'Lift one foot, rotate ankle slowly. Prevents ankle strain during walking and jogging.'},
+    {nm:'Arm Circles', sets:'10 forward + 10 backward', tip:'Keep arms straight, make large slow circles. Warms the shoulder joints.'},
+  ],
+  strength: [
+    {nm:'March in Place', sets:'90 sec', tip:'Elevate your heart rate gently before lifting. Gets blood flowing to the muscles.'},
+    {nm:'Hip Circles', sets:'10 each direction', tip:'Hands on hips, feet shoulder-width. Draw large circles with your hips. Warms the hip joints for squats and lunges.'},
+    {nm:'Shoulder Rolls', sets:'10 forward + 10 backward', tip:'Slow and controlled. Warms the shoulder joint for pressing movements.'},
+    {nm:'Bodyweight Squat (slow)', sets:'2 × 8 reps — very slow', tip:'3 sec down, 3 sec up. No weight, just range of motion. Lubricates the knee and hip joints before your working sets.'},
+    {nm:'Cat-Cow Stretch', sets:'8 slow breath cycles', tip:'On all fours. Inhale: arch back, look up (cow). Exhale: round spine, tuck chin (cat). Mobilises the spine before any lifting session.'},
+  ],
+  yoga: [
+    {nm:'Neck Rolls', sets:'5 slow circles each direction', tip:'Sit or stand. Drop chin to chest, slowly roll head to one side, back, and around. Releases tension before stretching.'},
+    {nm:'Seated Spinal Twist (simple)', sets:'30 sec each side', tip:'Sit cross-legged, place right hand on left knee and twist to look over your left shoulder. Warms the spine before deeper poses.'},
+    {nm:'Wrist Circles', sets:'10 each direction', tip:'Extend arms, make slow fist and rotate. Protects wrists during downward dog and plank poses.'},
+    {nm:'Child\'s Pose (brief)', sets:'30 sec', tip:'A quick opening stretch before the full yoga flow begins.'},
+  ],
+};
+
+const phases = [
+  {
+    title:'Foundation', sub:'Weeks 1–4 · Month 1',
+    weeks:[
+      {n:1, title:'First steps', sessions:4, avgK:460, kcal:'~1,840', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'Treadmill Walk', exs:[
+            {nm:'Treadmill brisk walk', sets:'30 min', spec:'Speed: 5.0 km/h · Incline: 2.0%', tip:'Stand upright, do NOT hold rails. If too easy after 10 min, increase incline not speed.', timer:0},
+          ], k:460},
+          {d:'Wed', t:'strength', label:'Bodyweight Strength', exs:[
+            {nm:'Bodyweight squat', sets:'3 sets × 10 reps', spec:'', tip:'3 sec down, 1 sec pause, 2 sec up. Rest 60 sec between sets.', timer:60},
+            {nm:'Push-up', sets:'3 sets × 8 reps', spec:'', tip:'Knee-modified is fine. Keep core tight throughout.', timer:60},
+            {nm:'Glute bridge', sets:'3 sets × 12 reps', spec:'', tip:'2 sec squeeze at the top every rep.', timer:60},
+            {nm:'Plank', sets:'3 sets × 20 sec hold', spec:'', tip:'Stop before form breaks.', timer:20},
+          ], k:460},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'cardio', label:'Treadmill Walk', exs:[
+            {nm:'Treadmill brisk walk', sets:'30 min', spec:'Speed: 5.0 km/h · Incline: 2.0%', tip:'Notice if breathing feels slightly easier than Tuesday.', timer:0},
+          ], k:460},
+          {d:'Sat', t:'yoga', label:'Yoga & Stretch', exs:[
+            {nm:'Tadasana — Mountain Pose', sets:'Hold 60 sec', spec:'Hold: 60 sec', tip:'Stand tall, feet hip-width, close eyes, breathe deeply 5 times. Resets posture.', timer:60},
+            {nm:'Adho Mukha Svanasana — Downward Dog', sets:'Hold 40 sec × 3 rounds', spec:'Hold: 40 sec, rest 10 sec between rounds', tip:'All fours → tuck toes → push hips up forming an inverted V. Heels reach toward floor.', timer:40},
+            {nm:'Balasana — Child\'s Pose', sets:'Hold 90 sec', spec:'Hold: 90 sec', tip:'Kneel, sit back on heels, reach arms forward, forehead to floor. Decompresses lower back.', timer:90},
+            {nm:'Setu Bandhasana — Bridge Pose', sets:'Hold 40 sec × 3 rounds', spec:'Hold: 40 sec, 3 rounds', tip:'Lie on back, knees bent. Drive hips to ceiling. Squeeze glutes hard. Hold.', timer:40},
+            {nm:'Supine Spinal Twist', sets:'Hold 30 sec each side', spec:'Hold: 30 sec per side', tip:'Lie on back, draw right knee to chest, let it fall left across body. Look right. Switch sides.', timer:30},
+          ], k:460},
+        ]
+      },
+      {n:2, title:'Add jogging', sessions:5, avgK:485, kcal:'~2,420', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'Walk/Jog Intervals', exs:[
+            {nm:'Walk/jog intervals', sets:'40 min total', spec:'Walk: 5.0 km/h · Jog: 6.5 km/h · Incline: 1.5%', tip:'Walk 4 min / jog 1 min × 8 rounds. Jog = fast shuffle, not a sprint.', timer:0},
+          ], k:485},
+          {d:'Wed', t:'strength', label:'Bodyweight Strength', exs:[
+            {nm:'Bodyweight squat', sets:'4 sets × 12 reps', spec:'', tip:'Add 2 sec pause at the very bottom.', timer:60},
+            {nm:'Push-up', sets:'4 sets × 10 reps', spec:'', tip:'Push for 3–4 full push-ups before dropping to knees.', timer:60},
+            {nm:'Standing lunge', sets:'3 sets × 10 reps each leg', spec:'', tip:'Slow and controlled. Front knee stays above ankle.', timer:60},
+            {nm:'Glute bridge', sets:'3 sets × 15 reps', spec:'', tip:'', timer:60},
+            {nm:'Plank', sets:'3 sets × 30 sec hold', spec:'', tip:'10 more seconds vs last week.', timer:30},
+          ], k:485},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'cardio', label:'High-Incline Walk', exs:[
+            {nm:'Treadmill high-incline walk', sets:'40 min', spec:'Speed: 5.0 km/h · Incline: 5.0%', tip:'Glutes and hamstrings fire much more than flat walking.', timer:0},
+          ], k:485},
+          {d:'Sat', t:'strength', label:'Bodyweight Strength', exs:[
+            {nm:'Bodyweight squat', sets:'4 sets × 12 reps', spec:'', tip:'', timer:60},
+            {nm:'Push-up', sets:'4 sets × 10 reps', spec:'', tip:'', timer:60},
+            {nm:'Standing lunge', sets:'3 sets × 10 reps each leg', spec:'', tip:'', timer:60},
+            {nm:'Plank', sets:'3 sets × 30 sec', spec:'', tip:'', timer:30},
+            {nm:'Glute bridge', sets:'3 sets × 15 reps', spec:'', tip:'', timer:60},
+          ], k:485},
+        ]
+      },
+      {n:3, title:'Stronger base', sessions:5, avgK:510, kcal:'~2,530', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'Walk/Jog Intervals', exs:[
+            {nm:'Walk/jog intervals', sets:'45 min total', spec:'Walk: 5.0 km/h · Jog: 7.0 km/h · Incline: 1.0%', tip:'Walk 3 min / jog 2 min × 9 rounds. More jogging than last week.', timer:0},
+          ], k:510},
+          {d:'Wed', t:'strength', label:'Bodyweight Strength', exs:[
+            {nm:'Bodyweight squat', sets:'4 sets × 15 reps', spec:'', tip:'2 sec pause at the bottom every rep.', timer:60},
+            {nm:'Push-up', sets:'4 sets × 12 reps', spec:'', tip:'Aim for all full push-ups. Knees only for last 2–3 reps.', timer:60},
+            {nm:'Standing lunge', sets:'4 sets × 12 reps each leg', spec:'', tip:'', timer:60},
+            {nm:'Plank', sets:'3 sets × 45 sec hold', spec:'', tip:'', timer:45},
+            {nm:'Glute bridge (single leg)', sets:'3 sets × 10 reps each leg', spec:'', tip:'One leg extended. Keep hips level — do not tilt.', timer:60},
+          ], k:510},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'cardio', label:'High-Incline Walk', exs:[
+            {nm:'Treadmill high-incline walk', sets:'45 min', spec:'Speed: 5.0 km/h · Incline: 6.0%', tip:'Steeper than last week. Deep glute and hamstring activation.', timer:0},
+          ], k:510},
+          {d:'Sat', t:'yoga', label:'Yoga & Stretch', exs:[
+            {nm:'Tadasana — Mountain Pose', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I — Warrior 1', sets:'45 sec each side × 2 rounds', spec:'Hold: 45 sec per side', tip:'Front knee at 90°, back leg straight, arms overhead. Square hips to front.', timer:45},
+            {nm:'Virabhadrasana II — Warrior 2', sets:'45 sec each side × 2 rounds', spec:'Hold: 45 sec per side', tip:'Feet wide, front knee bent, arms extending wide. Gaze over front hand.', timer:45},
+            {nm:'Adho Mukha Svanasana — Downward Dog', sets:'45 sec × 3 rounds', spec:'Hold: 45 sec, 3 rounds', tip:'', timer:45},
+            {nm:'Paschimottanasana — Seated Forward Bend', sets:'60 sec hold', spec:'Hold: 60 sec', tip:'Legs extended, fold from hips toward feet. Never force it.', timer:60},
+            {nm:'Balasana — Child\'s Pose', sets:'90 sec hold', spec:'Hold: 90 sec', tip:'', timer:90},
+            {nm:'Supine Spinal Twist', sets:'30 sec each side', spec:'Hold: 30 sec per side', tip:'', timer:30},
+          ], k:510},
+        ]
+      },
+      {n:4, title:'Deload — Month 1 done', sessions:4, avgK:405, kcal:'~1,610', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'Easy Walk', exs:[
+            {nm:'Treadmill easy walk', sets:'30 min', spec:'Speed: 4.5 km/h · Incline: 2.0%', tip:'Deload week — intentionally lighter. Your body is adapting. Lower effort is correct.', timer:0},
+          ], k:405},
+          {d:'Wed', t:'strength', label:'Light Strength', exs:[
+            {nm:'Bodyweight squat', sets:'3 sets × 10 reps', spec:'', tip:'Light and controlled. Focus on perfect form.', timer:60},
+            {nm:'Push-up', sets:'3 sets × 10 reps', spec:'', tip:'', timer:60},
+            {nm:'Plank', sets:'2 sets × 40 sec hold', spec:'', tip:'', timer:40},
+          ], k:405},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'yoga', label:'Yoga & Stretch', exs:[
+            {nm:'Tadasana — Mountain Pose', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I — Warrior 1', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Virabhadrasana II — Warrior 2', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Trikonasana — Triangle Pose', sets:'40 sec each side × 2 rounds', spec:'Hold: 40 sec per side', tip:'Feet wide, extend torso sideways. One hand toward shin, other arm up. Look up.', timer:40},
+            {nm:'Setu Bandhasana — Bridge Pose', sets:'40 sec × 3 rounds', spec:'Hold: 40 sec, 3 rounds', tip:'', timer:40},
+            {nm:'Paschimottanasana — Seated Forward Bend', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Balasana — Child\'s Pose', sets:'90 sec', spec:'Hold: 90 sec', tip:'Phase 1 complete. Machines start next week.', timer:90},
+          ], k:405},
+          {d:'Sat', t:'active', label:'Easy Walk Outdoors', exs:[
+            {nm:'Easy outdoor walk', sets:'30 min', spec:'', tip:'No gym. Sunlight, fresh air. Enjoy the rest.', timer:0},
+          ], k:0},
+        ]
+      },
+    ]
+  },
+  {
+    title:'Build', sub:'Weeks 5–11 · Months 2–3',
+    weeks:[
+      {n:5, title:'Machines begin', sessions:4, avgK:530, kcal:'~2,120', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'Jog (Continuous)', exs:[
+            {nm:'Treadmill jog — continuous', sets:'35 min', spec:'Speed: 7.0 km/h · Incline: 1.0%', tip:'First sustained jog. Go slower than you think. Walk 30 sec if needed, then continue.', timer:0},
+          ], k:530},
+          {d:'Wed', t:'strength', label:'Machine Strength A', exs:[
+            {nm:'Leg press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 40–50 kg', tip:'Feet shoulder-width on platform. Lower to 90° knee bend. Never lock knees.', timer:90},
+            {nm:'Lat pulldown machine', sets:'4 sets × 12 reps', spec:'Machine weight: 20–25 kg', tip:'Pull to upper chest. Feel shoulder blades squeeze — it\'s a back exercise.', timer:90},
+            {nm:'Chest press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 20–30 kg', tip:'Back flat on pad. Full controlled range of motion.', timer:90},
+            {nm:'Plank', sets:'3 sets × 60 sec hold', spec:'', tip:'', timer:60},
+          ], k:530},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'cardio', label:'High-Incline Walk', exs:[
+            {nm:'Treadmill high-incline walk', sets:'40 min', spec:'Speed: 5.0 km/h · Incline: 7.0%', tip:'Significant glute and hamstring activation.', timer:0},
+          ], k:530},
+          {d:'Sat', t:'yoga', label:'Yoga & Stretch', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I — Warrior 1', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Virabhadrasana II — Warrior 2', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Trikonasana — Triangle Pose', sets:'40 sec each side × 2', spec:'Hold: 40 sec per side', tip:'', timer:40},
+            {nm:'Adho Mukha Svanasana', sets:'45 sec × 3', spec:'Hold: 45 sec, 3 rounds', tip:'', timer:45},
+            {nm:'Setu Bandhasana — Bridge Pose', sets:'40 sec × 3', spec:'Hold: 40 sec, 3 rounds', tip:'', timer:40},
+            {nm:'Balasana — Child\'s Pose', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+          ], k:530},
+        ]
+      },
+      {n:6, title:'Up the weight', sessions:5, avgK:555, kcal:'~2,760', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'Jog (Continuous)', exs:[
+            {nm:'Treadmill jog', sets:'38 min', spec:'Speed: 7.5 km/h · Incline: 1.0%', tip:'', timer:0},
+          ], k:555},
+          {d:'Wed', t:'strength', label:'Machine Strength A', exs:[
+            {nm:'Leg press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 50–60 kg', tip:'Increase if last week felt easy by rep 12.', timer:90},
+            {nm:'Lat pulldown machine', sets:'4 sets × 12 reps', spec:'Machine weight: 25–30 kg', tip:'', timer:90},
+            {nm:'Chest press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 25–35 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'4 sets × 12 reps', spec:'Machine weight: 25–30 kg', tip:'Pull to lower chest, elbows driving back. 1 sec pause at peak.', timer:90},
+            {nm:'Plank', sets:'3 sets × 60 sec', spec:'', tip:'', timer:60},
+          ], k:555},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'cardio', label:'Jog + Incline Walk', exs:[
+            {nm:'Treadmill jog + high-incline walk', sets:'45 min total', spec:'Jog: 7.5 km/h / 1.0% → Walk: 5.0 km/h / 8.0%', tip:'Jog 25 min, switch to steep incline walk 20 min.', timer:0},
+          ], k:555},
+          {d:'Sat', t:'strength', label:'Machine Strength B', exs:[
+            {nm:'Leg press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 50–60 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 15–20 kg', tip:'Handles start at shoulder height. Press straight up.', timer:90},
+            {nm:'Leg curl machine', sets:'3 sets × 12 reps', spec:'Machine weight: 20–25 kg', tip:'Face down. Curl toward glutes. 3 sec lower.', timer:90},
+            {nm:'Plank', sets:'3 sets × 60 sec', spec:'', tip:'', timer:60},
+          ], k:555},
+        ]
+      },
+      {n:7, title:'Thursday activated', sessions:5, avgK:575, kcal:'~2,880', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'Jog (Continuous)', exs:[
+            {nm:'Treadmill jog', sets:'40 min', spec:'Speed: 7.5 km/h · Incline: 1.5%', tip:'', timer:0},
+          ], k:575},
+          {d:'Wed', t:'strength', label:'Machine Strength A', exs:[
+            {nm:'Leg press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 60–70 kg', tip:'', timer:90},
+            {nm:'Lat pulldown machine', sets:'4 sets × 12 reps', spec:'Machine weight: 30–35 kg', tip:'', timer:90},
+            {nm:'Chest press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 30–40 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'4 sets × 12 reps', spec:'Machine weight: 30–35 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 75 sec', spec:'', tip:'15 more seconds — a meaningful jump.', timer:75},
+          ], k:575},
+          {d:'Thu', t:'yoga', label:'Yoga & Recovery', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Virabhadrasana II', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Adho Mukha Svanasana', sets:'45 sec × 3', spec:'Hold: 45 sec, 3 rounds', tip:'', timer:45},
+            {nm:'Paschimottanasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'Deep hamstring stretch after two training days.', timer:60},
+            {nm:'Supine Spinal Twist', sets:'30 sec each side', spec:'Hold: 30 sec per side', tip:'Spinal decompression — relieves lower back tightness.', timer:30},
+            {nm:'Balasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+          ], k:150},
+          {d:'Fri', t:'cardio', label:'High-Incline Walk', exs:[
+            {nm:'Treadmill high-incline walk', sets:'45 min', spec:'Speed: 5.0 km/h · Incline: 8.0%', tip:'', timer:0},
+          ], k:575},
+          {d:'Sat', t:'strength', label:'Machine Strength B', exs:[
+            {nm:'Leg press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 60–70 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'4 sets × 12 reps', spec:'Machine weight: 20–25 kg', tip:'', timer:90},
+            {nm:'Leg curl machine', sets:'4 sets × 12 reps', spec:'Machine weight: 25–30 kg', tip:'', timer:90},
+            {nm:'Lat pulldown machine', sets:'3 sets × 12 reps', spec:'Machine weight: 30–35 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 75 sec', spec:'', tip:'', timer:75},
+          ], k:575},
+        ]
+      },
+      {n:8, title:'Strength phase', sessions:5, avgK:605, kcal:'~3,020', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'Jog (Continuous)', exs:[
+            {nm:'Treadmill jog', sets:'42 min', spec:'Speed: 8.0 km/h · Incline: 1.5%', tip:'', timer:0},
+          ], k:605},
+          {d:'Wed', t:'strength', label:'Machine Strength A (Heavy)', exs:[
+            {nm:'Leg press machine', sets:'4 sets × 10 reps', spec:'Machine weight: 70–80 kg', tip:'Fewer reps, heavier weight — shift toward building real strength.', timer:90},
+            {nm:'Lat pulldown machine', sets:'4 sets × 10 reps', spec:'Machine weight: 35–40 kg', tip:'', timer:90},
+            {nm:'Chest press machine', sets:'4 sets × 10 reps', spec:'Machine weight: 35–45 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'4 sets × 10 reps', spec:'Machine weight: 35–40 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'4 sets × 10 reps', spec:'Machine weight: 25–30 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 75 sec', spec:'', tip:'', timer:75},
+          ], k:605},
+          {d:'Thu', t:'yoga', label:'Yoga & Recovery', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Trikonasana — Triangle Pose', sets:'40 sec each side × 2', spec:'Hold: 40 sec per side', tip:'', timer:40},
+            {nm:'Adho Mukha Svanasana', sets:'45 sec × 3', spec:'Hold: 45 sec, 3 rounds', tip:'', timer:45},
+            {nm:'Paschimottanasana', sets:'75 sec', spec:'Hold: 75 sec', tip:'15 sec longer as flexibility improves.', timer:75},
+            {nm:'Setu Bandhasana', sets:'40 sec × 3', spec:'Hold: 40 sec, 3 rounds', tip:'Glute activation on recovery day.', timer:40},
+            {nm:'Supine Spinal Twist', sets:'30 sec each side', spec:'Hold: 30 sec per side', tip:'', timer:30},
+            {nm:'Balasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+          ], k:150},
+          {d:'Fri', t:'cardio', label:'Jog (Continuous)', exs:[
+            {nm:'Treadmill jog', sets:'40 min', spec:'Speed: 7.5 km/h · Incline: 2.0%', tip:'Two jog sessions this week — significant aerobic volume.', timer:0},
+          ], k:605},
+          {d:'Sat', t:'strength', label:'Machine Strength B', exs:[
+            {nm:'Leg press machine', sets:'4 sets × 10 reps', spec:'Machine weight: 70–80 kg', tip:'', timer:90},
+            {nm:'Leg curl machine', sets:'4 sets × 10 reps', spec:'Machine weight: 30–35 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'4 sets × 10 reps', spec:'Machine weight: 25–30 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'4 sets × 10 reps', spec:'Machine weight: 35–40 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 75 sec', spec:'', tip:'', timer:75},
+          ], k:605},
+        ]
+      },
+      {n:9, title:'Halfway milestone', sessions:5, avgK:625, kcal:'~3,110', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'5K Run', exs:[
+            {nm:'Treadmill 5K run', sets:'~37 min', spec:'Speed: 8.0 km/h · Incline: 0.5%', tip:'First 5K attempt. Finishing matters more than time. You started from zero 8 weeks ago.', timer:0},
+          ], k:625},
+          {d:'Wed', t:'strength', label:'Machine Strength A (5 sets)', exs:[
+            {nm:'Leg press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 75–85 kg', tip:'Add a 5th set — more volume = more calorie burn.', timer:90},
+            {nm:'Lat pulldown machine', sets:'5 sets × 10 reps', spec:'Machine weight: 35–45 kg', tip:'', timer:90},
+            {nm:'Chest press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 40–50 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'5 sets × 10 reps', spec:'Machine weight: 38–45 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec hold', spec:'', tip:'90 seconds — hold it with pride.', timer:90},
+          ], k:625},
+          {d:'Thu', t:'yoga', label:'Yoga & Recovery', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Virabhadrasana II', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Trikonasana', sets:'40 sec each side × 2', spec:'Hold: 40 sec per side', tip:'', timer:40},
+            {nm:'Adho Mukha Svanasana', sets:'45 sec × 3', spec:'Hold: 45 sec, 3 rounds', tip:'', timer:45},
+            {nm:'Paschimottanasana', sets:'75 sec', spec:'Hold: 75 sec', tip:'', timer:75},
+            {nm:'Balasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+          ], k:150},
+          {d:'Fri', t:'cardio', label:'High-Incline Walk', exs:[
+            {nm:'Treadmill high-incline walk', sets:'50 min', spec:'Speed: 5.0 km/h · Incline: 8.0%', tip:'Longest incline walk yet.', timer:0},
+          ], k:625},
+          {d:'Sat', t:'strength', label:'Machine Strength B (5 sets)', exs:[
+            {nm:'Leg press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 75–85 kg', tip:'', timer:90},
+            {nm:'Leg curl machine', sets:'4 sets × 10 reps', spec:'Machine weight: 30–38 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 28–35 kg', tip:'', timer:90},
+            {nm:'Lat pulldown machine', sets:'4 sets × 10 reps', spec:'Machine weight: 35–45 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:625},
+        ]
+      },
+      {n:10, title:'High volume', sessions:6, avgK:625, kcal:'~3,340', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'Jog (Continuous)', exs:[
+            {nm:'Treadmill jog', sets:'45 min', spec:'Speed: 8.0 km/h · Incline: 1.5%', tip:'Longest jog yet. Settle into a sustainable pace.', timer:0},
+          ], k:625},
+          {d:'Wed', t:'strength', label:'Machine Strength A', exs:[
+            {nm:'Leg press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 80–90 kg', tip:'', timer:90},
+            {nm:'Lat pulldown machine', sets:'5 sets × 10 reps', spec:'Machine weight: 40–48 kg', tip:'', timer:90},
+            {nm:'Chest press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 45–55 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'5 sets × 10 reps', spec:'Machine weight: 42–50 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'4 sets × 10 reps', spec:'Machine weight: 30–38 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:625},
+          {d:'Thu', t:'cardio', label:'Incline Walk (Thu Active)', exs:[
+            {nm:'Treadmill high-incline walk', sets:'40 min', spec:'Speed: 5.0 km/h · Incline: 8.0%', tip:'Thursday cardio this week — extra session to push weekly calorie total.', timer:0},
+          ], k:625},
+          {d:'Fri', t:'cardio', label:'Jog + Incline Walk', exs:[
+            {nm:'Treadmill jog + incline walk', sets:'50 min total', spec:'Jog: 8.0 km/h / 1.0% → Walk: 5.0 km/h / 8.0%', tip:'Jog 30 min then switch to steep incline walk 20 min.', timer:0},
+          ], k:625},
+          {d:'Sat', t:'strength', label:'Machine Strength B', exs:[
+            {nm:'Leg press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 80–90 kg', tip:'', timer:90},
+            {nm:'Leg curl machine', sets:'5 sets × 10 reps', spec:'Machine weight: 35–42 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'5 sets × 10 reps', spec:'Machine weight: 30–38 kg', tip:'', timer:90},
+            {nm:'Lat pulldown machine', sets:'4 sets × 10 reps', spec:'Machine weight: 40–48 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:625},
+        ]
+      },
+      {n:11, title:'Deload before Phase 3', sessions:3, avgK:520, kcal:'~1,560', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'Easy Jog', exs:[
+            {nm:'Treadmill easy jog', sets:'30 min', spec:'Speed: 6.5 km/h · Incline: 1.0%', tip:'Deload week — easy pace. Body is absorbing months of work.', timer:0},
+          ], k:520},
+          {d:'Wed', t:'strength', label:'Light Machines', exs:[
+            {nm:'Leg press machine', sets:'3 sets × 10 reps', spec:'Machine weight: 50–60 kg', tip:'Recovery session — light weight, perfect form.', timer:90},
+            {nm:'Lat pulldown machine', sets:'3 sets × 10 reps', spec:'Machine weight: 30–35 kg', tip:'', timer:90},
+            {nm:'Chest press machine', sets:'3 sets × 10 reps', spec:'Machine weight: 30–35 kg', tip:'', timer:90},
+          ], k:520},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'yoga', label:'Yoga — Deload Flow', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'5 more seconds per side — flexibility has improved.', timer:50},
+            {nm:'Virabhadrasana II', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Trikonasana', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Adho Mukha Svanasana', sets:'50 sec × 3', spec:'Hold: 50 sec, 3 rounds', tip:'', timer:50},
+            {nm:'Paschimottanasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'Notice the improvement in flexibility since week 1.', timer:90},
+            {nm:'Setu Bandhasana', sets:'40 sec × 3', spec:'Hold: 40 sec, 3 rounds', tip:'', timer:40},
+            {nm:'Supine Spinal Twist', sets:'40 sec each side', spec:'Hold: 40 sec per side', tip:'', timer:40},
+            {nm:'Balasana', sets:'2 min', spec:'Hold: 2 min', tip:'Phase 3 starts next week. Enter it rested.', timer:120},
+          ], k:520},
+          {d:'Sat', t:'rest', label:'Rest Day', exs:[], k:0},
+        ]
+      },
+    ]
+  },
+  {
+    title:'Push', sub:'Weeks 12–16 · Month 4',
+    weeks:[
+      {n:12, title:'HIIT begins', sessions:5, avgK:650, kcal:'~3,250', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'Treadmill HIIT', exs:[
+            {nm:'Treadmill HIIT', sets:'28 min total', spec:'Sprint: 10.0 km/h · Walk: 5.5 km/h · Incline: 1.0%', tip:'5 min warm-up walk → 45 sec sprint / 75 sec walk × 12 rounds → 3 min cool-down. Burns ~420 kcal.', timer:0},
+          ], k:650},
+          {d:'Wed', t:'strength', label:'Heavy Machines A', exs:[
+            {nm:'Leg press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 90–100 kg', tip:'Rep 8 should require real effort.', timer:90},
+            {nm:'Lat pulldown machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 45–55 kg', tip:'', timer:90},
+            {nm:'Chest press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 50–60 kg', tip:'', timer:90},
+            {nm:'Seated row machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 48–55 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:650},
+          {d:'Thu', t:'yoga', label:'Yoga & Recovery', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Virabhadrasana II', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Adho Mukha Svanasana', sets:'50 sec × 3', spec:'Hold: 50 sec, 3 rounds', tip:'', timer:50},
+            {nm:'Paschimottanasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+            {nm:'Supine Spinal Twist', sets:'40 sec each side', spec:'Hold: 40 sec per side', tip:'', timer:40},
+            {nm:'Balasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+          ], k:150},
+          {d:'Fri', t:'cardio', label:'HIIT + Run', exs:[
+            {nm:'Treadmill HIIT + sustained run', sets:'45 min total', spec:'HIIT: 10.0/5.5 km/h / 1.0% → Run: 8.5 km/h / 1.5%', tip:'12 rounds HIIT then 15 min continuous run.', timer:0},
+          ], k:650},
+          {d:'Sat', t:'strength', label:'Heavy Machines B', exs:[
+            {nm:'Leg press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 90–100 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 35–45 kg', tip:'', timer:90},
+            {nm:'Leg curl machine (heavy)', sets:'4 sets × 8 reps', spec:'Machine weight: 38–45 kg', tip:'', timer:90},
+            {nm:'Lat pulldown machine', sets:'4 sets × 8 reps', spec:'Machine weight: 45–55 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:650},
+        ]
+      },
+      {n:13, title:'Push harder', sessions:6, avgK:670, kcal:'~3,450', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'Treadmill HIIT', exs:[
+            {nm:'Treadmill HIIT', sets:'32 min total', spec:'Sprint: 10.5 km/h · Walk: 5.5 km/h · Incline: 1.0%', tip:'5 min warm-up → 45 sec sprint / 60 sec walk × 14 rounds → 3 min cool-down. Less rest = harder.', timer:0},
+          ], k:670},
+          {d:'Wed', t:'strength', label:'Heavy Machines A', exs:[
+            {nm:'Leg press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 95–110 kg', tip:'Increase weight if last week felt manageable by rep 8.', timer:90},
+            {nm:'Lat pulldown machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 50–60 kg', tip:'', timer:90},
+            {nm:'Chest press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 55–65 kg', tip:'', timer:90},
+            {nm:'Seated row machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 50–60 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine', sets:'4 sets × 8 reps', spec:'Machine weight: 38–48 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:670},
+          {d:'Thu', t:'cardio', label:'Incline Power Walk (Thu)', exs:[
+            {nm:'Treadmill incline power walk', sets:'40 min', spec:'Speed: 4.5 km/h · Incline: 10.0%', tip:'Active recovery Thursday. Burns calories without impacting Friday.', timer:0},
+          ], k:670},
+          {d:'Fri', t:'cardio', label:'Sustained Run', exs:[
+            {nm:'Treadmill sustained run', sets:'45 min', spec:'Speed: 8.5 km/h · Incline: 2.0%', tip:'Fastest sustained run yet. Push the pace.', timer:0},
+          ], k:670},
+          {d:'Sat', t:'strength', label:'Heavy Machines B', exs:[
+            {nm:'Leg press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 95–110 kg', tip:'', timer:90},
+            {nm:'Leg curl machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 40–48 kg', tip:'', timer:90},
+            {nm:'Shoulder press machine (heavy)', sets:'5 sets × 8 reps', spec:'Machine weight: 38–48 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'5 sets × 8 reps', spec:'Machine weight: 50–60 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:670},
+        ]
+      },
+      {n:14, title:'Peak intensity', sessions:6, avgK:715, kcal:'~3,630', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'HIIT (Hardest)', exs:[
+            {nm:'Treadmill HIIT (hardest)', sets:'35 min total', spec:'Sprint: 11.0 km/h · Walk: 5.5 km/h · Incline: 1.0%', tip:'5 min warm-up → 1 min sprint / 1 min walk × 13 rounds → 3 min cool-down. Equal work and rest.', timer:0},
+          ], k:715},
+          {d:'Wed', t:'strength', label:'Max Strength A (6 reps)', exs:[
+            {nm:'Leg press machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 100–120 kg', tip:'6-rep sets = maximum strength stimulus. Rest 90–120 sec between sets.', timer:120},
+            {nm:'Lat pulldown machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 55–65 kg', tip:'', timer:120},
+            {nm:'Chest press machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 60–75 kg', tip:'', timer:120},
+            {nm:'Seated row machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 55–65 kg', tip:'', timer:120},
+            {nm:'Shoulder press machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 42–52 kg', tip:'', timer:120},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:715},
+          {d:'Thu', t:'yoga', label:'Yoga & Recovery', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Virabhadrasana II', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Trikonasana', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Adho Mukha Svanasana', sets:'50 sec × 3', spec:'Hold: 50 sec, 3 rounds', tip:'', timer:50},
+            {nm:'Paschimottanasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+            {nm:'Balasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+          ], k:150},
+          {d:'Fri', t:'cardio', label:'HIIT + Sustained Run', exs:[
+            {nm:'Treadmill HIIT + sustained run', sets:'50 min total', spec:'HIIT: 11.0/5.5 km/h / 1.0% → Run: 9.0 km/h / 1.5%', tip:'13 rounds HIIT → 18 min run. Biggest cardio session of the plan.', timer:0},
+          ], k:715},
+          {d:'Sat', t:'strength', label:'Max Strength B (6 reps)', exs:[
+            {nm:'Leg press machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 100–120 kg', tip:'', timer:120},
+            {nm:'Leg curl machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 45–55 kg', tip:'', timer:120},
+            {nm:'Shoulder press machine (heavy)', sets:'5 sets × 6 reps', spec:'Machine weight: 42–52 kg', tip:'', timer:120},
+            {nm:'Lat pulldown machine', sets:'5 sets × 6 reps', spec:'Machine weight: 55–65 kg', tip:'', timer:120},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'', timer:90},
+          ], k:715},
+        ]
+      },
+      {n:15, title:'Final push', sessions:6, avgK:690, kcal:'~3,510', thuUsed:true,
+        days:[
+          {d:'Tue', t:'cardio', label:'Treadmill HIIT', exs:[
+            {nm:'Treadmill HIIT', sets:'32 min', spec:'Sprint: 11.0 km/h · Walk: 5.5 km/h · Incline: 1.0%', tip:'Last major HIIT session. Give every sprint everything.', timer:0},
+          ], k:690},
+          {d:'Wed', t:'strength', label:'Heavy Machines A', exs:[
+            {nm:'Leg press machine', sets:'5 sets × 8 reps', spec:'Machine weight: 95–110 kg', tip:'Back to 8 reps — more total volume.', timer:90},
+            {nm:'Lat pulldown machine', sets:'5 sets × 8 reps', spec:'Machine weight: 50–60 kg', tip:'', timer:90},
+            {nm:'Chest press machine', sets:'5 sets × 8 reps', spec:'Machine weight: 55–70 kg', tip:'', timer:90},
+            {nm:'Seated row machine', sets:'5 sets × 8 reps', spec:'Machine weight: 50–60 kg', tip:'', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'One of the last plank sessions.', timer:90},
+          ], k:690},
+          {d:'Thu', t:'cardio', label:'Incline Power Walk (Thu)', exs:[
+            {nm:'Treadmill incline power walk', sets:'40 min', spec:'Speed: 4.5 km/h · Incline: 10.0%', tip:'Active recovery. Burns calories without taxing Friday\'s run.', timer:0},
+          ], k:690},
+          {d:'Fri', t:'cardio', label:'Sustained Run', exs:[
+            {nm:'Treadmill sustained run', sets:'45 min', spec:'Speed: 9.0 km/h · Incline: 1.5%', tip:'Strong run. Almost at the goal. Feel the difference from week 1.', timer:0},
+          ], k:690},
+          {d:'Sat', t:'yoga', label:'Yoga & Stretch', exs:[
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'Reflect on where you started. Week 15.', timer:60},
+            {nm:'Virabhadrasana I', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Virabhadrasana II', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Trikonasana', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Adho Mukha Svanasana', sets:'50 sec × 3', spec:'Hold: 50 sec, 3 rounds', tip:'', timer:50},
+            {nm:'Paschimottanasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+            {nm:'Setu Bandhasana', sets:'40 sec × 3', spec:'Hold: 40 sec, 3 rounds', tip:'', timer:40},
+            {nm:'Supine Spinal Twist', sets:'40 sec each side', spec:'Hold: 40 sec per side', tip:'', timer:40},
+            {nm:'Balasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'One week left.', timer:90},
+          ], k:150},
+        ]
+      },
+      {n:16, title:'Goal week 🎯 75 kg', sessions:5, avgK:640, kcal:'~3,200', thuUsed:false,
+        days:[
+          {d:'Tue', t:'cardio', label:'5K Time Trial', exs:[
+            {nm:'Treadmill 5K run — time trial', sets:'Best effort', spec:'Speed: 8.5–9.5 km/h · Incline: 0.5%', tip:'Record your time. Compare to week 9. The improvement will be significant.', timer:0},
+          ], k:640},
+          {d:'Wed', t:'strength', label:'Circuit — Lighter', exs:[
+            {nm:'Full machine circuit', sets:'3 sets × 10 reps each', spec:'Machine weight: 55–65% of your peak', tip:'Leg press, lat pulldown, chest press, seated row, shoulder press. Controlled and proud.', timer:90},
+            {nm:'Plank', sets:'3 sets × 90 sec', spec:'', tip:'The last plank of the plan.', timer:90},
+          ], k:640},
+          {d:'Thu', t:'rest', label:'Rest Day', exs:[], k:0},
+          {d:'Fri', t:'cardio', label:'Final HIIT', exs:[
+            {nm:'Treadmill HIIT — final', sets:'28 min', spec:'Sprint: 11.0 km/h · Walk: 5.5 km/h · Incline: 1.0%', tip:'The last HIIT of the entire plan. Sprint like you mean it.', timer:0},
+          ], k:640},
+          {d:'Sat', t:'yoga', label:'Final Yoga Session', exs:[
+            {nm:'Full celebratory yoga flow', sets:'~40 min total', spec:'', tip:'All poses. Full holds. You know this sequence now. Do it with intention.', timer:0},
+            {nm:'Tadasana', sets:'60 sec', spec:'Hold: 60 sec', tip:'', timer:60},
+            {nm:'Virabhadrasana I', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Virabhadrasana II', sets:'50 sec each side × 2', spec:'Hold: 50 sec per side', tip:'', timer:50},
+            {nm:'Trikonasana', sets:'45 sec each side × 2', spec:'Hold: 45 sec per side', tip:'', timer:45},
+            {nm:'Adho Mukha Svanasana', sets:'50 sec × 3', spec:'Hold: 50 sec, 3 rounds', tip:'', timer:50},
+            {nm:'Paschimottanasana', sets:'90 sec', spec:'Hold: 90 sec', tip:'', timer:90},
+            {nm:'Setu Bandhasana', sets:'40 sec × 3', spec:'Hold: 40 sec, 3 rounds', tip:'', timer:40},
+            {nm:'Supine Spinal Twist', sets:'40 sec each side', spec:'Hold: 40 sec per side', tip:'', timer:40},
+            {nm:'Balasana', sets:'2 min hold', spec:'Hold: 2 min', tip:'You did it. 16 weeks. 4 months. 10 kg. 75 kg.', timer:120},
+          ], k:150},
+        ]
+      },
+    ]
+  }
+];
+
+// ─── STATE ──────────────────────────────────────────────────────────────────
+const _ls = (() => { try { return {done:new Set(JSON.parse(localStorage.getItem('fp_done')||'[]')),checks:JSON.parse(localStorage.getItem('fp_checks')||'{}'),weights:JSON.parse(localStorage.getItem('fp_weights')||'[]')}; } catch(e){return{done:new Set(),checks:{},weights:[]};} })();
+const S = {
+  done: _ls.done,
+  checks: _ls.checks,
+  weights: _ls.weights,
+  curPhase: 0,
+  curWeek: null,
+  pageStack: ['home'],
+};
+const save = () => {
+  try {
+    localStorage.setItem('fp_done', JSON.stringify([...S.done]));
+    localStorage.setItem('fp_checks', JSON.stringify(S.checks));
+    localStorage.setItem('fp_weights', JSON.stringify(S.weights));
+    localStorage.setItem('fp_saved_at', Date.now().toString());
+  } catch(e) {
+    // localStorage quota exceeded or unavailable — silently handle
+    console.warn('Storage save failed:', e);
+  }
+};
+
+const loadState = () => {
+  try {
+    return {
+      done: new Set(JSON.parse(localStorage.getItem('fp_done')||'[]')),
+      checks: JSON.parse(localStorage.getItem('fp_checks')||'{}'),
+      weights: JSON.parse(localStorage.getItem('fp_weights')||'[]'),
+    };
+  } catch(e) { return {done: new Set(), checks: {}, weights: []}; }
+};
+
+function showIOSInstall() {
+  document.getElementById('ios-modal').style.display = 'flex';
+}
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isStandalone() {
+  return window.navigator.standalone === true || 
+    window.matchMedia('(display-mode: standalone)').matches;
+}
+
+// ─── TIMER ──────────────────────────────────────────────────────────────────
+let timerSec = 60, timerRemain = 60, timerRunning = false, timerInterval = null;
+const CIRC = 376.99;
+
+function setTimer(s) {
+  clearInterval(timerInterval); timerRunning = false;
+  timerSec = s; timerRemain = s;
+  document.querySelectorAll('.tp-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tp-btn').forEach(b => { if(parseInt(b.textContent)===s || b.textContent===s+'s' || (s===60&&b.textContent==='1 min')) b.classList.add('on'); });
+  updateTimerDisplay();
+  document.getElementById('timerBtn').textContent = 'Start';
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerRemain/60), s = timerRemain%60;
+  document.getElementById('timerDisplay').textContent = m+':'+(s<10?'0':'')+s;
+  const offset = CIRC * (1 - timerRemain/timerSec);
+  document.getElementById('timerRing').style.strokeDashoffset = offset;
+}
+
+function toggleTimer() {
+  if (timerRunning) {
+    clearInterval(timerInterval); timerRunning = false;
+    document.getElementById('timerBtn').textContent = 'Resume';
+  } else {
+    if (timerRemain <= 0) { timerRemain = timerSec; }
+    timerRunning = true;
+    document.getElementById('timerBtn').textContent = 'Pause';
+    timerInterval = setInterval(() => {
+      timerRemain--;
+      updateTimerDisplay();
+      if (timerRemain <= 0) {
+        clearInterval(timerInterval); timerRunning = false;
+        document.getElementById('timerBtn').textContent = 'Restart';
+        if ('vibrate' in navigator) navigator.vibrate([200,100,200]);
+        // beep
+        try {
+          const ctx = new (window.AudioContext||window.webkitAudioContext)();
+          [0,0.3,0.6].forEach(t => {
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.connect(g); g.connect(ctx.destination);
+            o.frequency.value = 880; g.gain.setValueAtTime(0.3, ctx.currentTime+t);
+            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+t+0.2);
+            o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.25);
+          });
+        } catch(e){}
+      }
+    }, 1000);
+  }
+}
+
+function openTimer(sec, label) {
+  document.getElementById('timerLabel').textContent = label || 'Timer';
+  setTimer(sec || 60);
+  document.getElementById('timer-sheet').classList.add('show');
+}
+
+function closeTimer() {
+  clearInterval(timerInterval); timerRunning = false;
+  document.getElementById('timer-sheet').classList.remove('show');
+}
+
+function closeTimerIfOutside(e) {
+  if (e.target === document.getElementById('timer-sheet')) closeTimer();
+}
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => { p.classList.add('hidden'); p.classList.remove('slide-left'); });
+  document.getElementById(name+'Page').classList.remove('hidden');
+  document.getElementById('backBtn').style.display = name==='home'||name==='progress' ? 'none':'flex';
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('on'));
+  if(name==='home') document.getElementById('bnHome').classList.add('on');
+  if(name==='progress'){ document.getElementById('bnProgress').classList.add('on'); renderProgress(); }
+  document.getElementById('headerTitle').textContent = name==='home'?'FitPlan':name==='progress'?'My Progress':'';
+  document.getElementById('headerSub').textContent = name==='home'?'85 → 75 kg · 16 Weeks':name==='progress'?'Weight & Workout Tracker':'';
+}
+
+function openWeek(ph, wk) {
+  S.curPhase = ph; S.curWeek = wk;
+  const week = phases[ph].weeks[wk];
+  document.getElementById('wdPhase').textContent = phases[ph].sub;
+  document.getElementById('wdTitle').textContent = `Week ${week.n} — ${week.title}`;
+  document.getElementById('headerTitle').textContent = `Week ${week.n}`;
+  document.getElementById('headerSub').textContent = week.title;
+  document.getElementById('backBtn').style.display = 'flex';
+  const chips = [`${week.sessions} days/week`, `~${week.avgK} kcal/day`, week.thuUsed?'Thu active':'Thu rest'];
+  document.getElementById('wdChips').innerHTML = chips.map((c,i)=>`<div class="wdh-chip${i===0?' accent':''}">${c}</div>`).join('');
+  renderMarkDone(week.n);
+  renderDays(week);
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('weekPage').classList.remove('hidden');
+  document.getElementById('weekPage').scrollTop = 0;
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('on'));
+}
+
+function goBack() {
+  showPage('home');
+  renderWeekList();
+  updateGlobalProg();
+}
+
+
+// ── WEIGHT CHART ──────────────────────────────────────────────────────────────
+function buildChart() {
+  const wrap = document.getElementById('weightChart');
+  if (!wrap) return;
+
+  // Expected weight: 85kg → 75kg over 16 weeks
+  // Realistic non-linear curve: faster loss early, slower later
+  const expected = [
+    85.0, 84.4, 83.7, 83.1, // wk 1-4 (foundation, ~0.65/wk)
+    82.4, 81.7, 81.0, 80.4, // wk 5-8 (build start, ~0.7/wk)
+    79.7, 79.0, 78.5, 77.9, // wk 9-12 (~0.6/wk, adaptation)
+    77.2, 76.5, 75.8, 75.0  // wk 13-16 (push, ~0.7/wk)
+  ];
+
+  const weights = S.weights.slice().sort((a,b) => a.ts - b.ts);
+
+  // Map weights to week numbers (1-16) based on timestamp
+  // Week 1 starts from the first logged weight's date
+  // We use log order if no timestamp alignment possible
+  const actualPoints = weights.map((w, i) => ({
+    week: Math.min(i + 1, 16),
+    val: w.v,
+    label: w.label
+  }));
+
+  // Chart dimensions
+  const W = 320, H = 180;
+  const PAD = { top: 10, right: 16, bottom: 28, left: 32 };
+  const chartW = W - PAD.left - PAD.right;
+  const chartH = H - PAD.top - PAD.bottom;
+
+  const minKg = 73, maxKg = 86;
+  const kgRange = maxKg - minKg;
+
+  const xScale = (week) => PAD.left + ((week - 1) / 15) * chartW;
+  const yScale = (kg) => PAD.top + ((maxKg - kg) / kgRange) * chartH;
+
+  // Build expected path
+  const expPath = expected.map((kg, i) => `${i === 0 ? 'M' : 'L'}${xScale(i+1).toFixed(1)},${yScale(kg).toFixed(1)}`).join(' ');
+
+  // Build expected area
+  const expArea = `${expPath} L${xScale(16).toFixed(1)},${(PAD.top+chartH).toFixed(1)} L${xScale(1).toFixed(1)},${(PAD.top+chartH).toFixed(1)} Z`;
+
+  // Build actual path
+  let actPath = '';
+  let actDots = '';
+  if (actualPoints.length > 0) {
+    actPath = actualPoints.map((p, i) => {
+      const x = xScale(p.week).toFixed(1);
+      const y = yScale(p.val).toFixed(1);
+      return `${i === 0 ? 'M' : 'L'}${x},${y}`;
+    }).join(' ');
+    actDots = actualPoints.map(p => {
+      const x = xScale(p.week).toFixed(1);
+      const y = yScale(p.val).toFixed(1);
+      return `<circle cx="${x}" cy="${y}" r="4" class="chart-actual-dot"><title>${p.val} kg · ${p.label}</title></circle>`;
+    }).join('');
+  }
+
+  // Grid lines & Y labels
+  const yTicks = [76, 78, 80, 82, 84];
+  const gridLines = yTicks.map(kg => {
+    const y = yScale(kg).toFixed(1);
+    return `<line x1="${PAD.left}" y1="${y}" x2="${PAD.left+chartW}" y2="${y}" class="chart-grid-line"/>
+    <text x="${(PAD.left-4).toFixed(1)}" y="${y}" class="chart-axis-label" text-anchor="end" dominant-baseline="middle">${kg}</text>`;
+  }).join('');
+
+  // X labels — show every 4 weeks
+  const xLabels = [1,4,8,12,16].map(wk => {
+    const x = xScale(wk).toFixed(1);
+    const y = (PAD.top + chartH + 14).toFixed(1);
+    return `<text x="${x}" y="${y}" class="chart-week-label" text-anchor="middle">W${wk}</text>`;
+  }).join('');
+
+  // Target line at 75kg
+  const targetY = yScale(75).toFixed(1);
+  const targetLine = `<line x1="${PAD.left}" y1="${targetY}" x2="${PAD.left+chartW}" y2="${targetY}" stroke="#ff9966" stroke-width="1" stroke-dasharray="2,4" opacity="0.5"/>
+  <text x="${PAD.left+chartW+4}" y="${targetY}" class="chart-axis-label" fill="#ff9966" dominant-baseline="middle">75</text>`;
+
+  // Expected dots (every 4 weeks)
+  const expDots = [0,3,7,11,15].map(i => {
+    const x = xScale(i+1).toFixed(1);
+    const y = yScale(expected[i]).toFixed(1);
+    return `<circle cx="${x}" cy="${y}" r="3" class="chart-expected-dot"/>`;
+  }).join('');
+
+  wrap.innerHTML = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <!-- Grid -->
+    ${gridLines}
+    ${xLabels}
+    ${targetLine}
+    <!-- Expected area -->
+    <path d="${expArea}" fill="#4fc3f7" class="chart-area"/>
+    <!-- Expected line -->
+    <path d="${expPath}" class="chart-expected-line"/>
+    ${expDots}
+    <!-- Actual line -->
+    ${actPath ? `<path d="${actPath}" class="chart-actual-line"/>` : ''}
+    ${actDots}
+  </svg>`;
+
+  if (actualPoints.length === 0) {
+    wrap.insertAdjacentHTML('beforeend', '<div style="text-align:center;padding:0.5rem 0 0;font-size:0.7rem;color:var(--muted);font-style:italic">Log weights above to plot your actual progress</div>');
+  }
+}
+
+// ─── RENDER HELPERS ──────────────────────────────────────────────────────────
+const TYPE_COLOR = {cardio:'#4a9fe0',strength:'#6fcf4a',yoga:'#c07ae8',rest:'#556655',active:'#e0a040'};
+const TYPE_LABEL = {cardio:'Cardio',strength:'Strength',yoga:'Yoga',rest:'Rest',active:'Active'};
+const TYPE_BG = {cardio:'var(--cardio-bg)',strength:'var(--strength-bg)',yoga:'var(--yoga-bg)',rest:'var(--rest-bg)',active:'var(--warmup-bg)'};
+
+function renderDays(week) {
+  const container = document.getElementById('daysContainer');
+  const wkey = `w${week.n}`;
+  if (!S.checks[wkey]) S.checks[wkey] = {};
+
+  container.innerHTML = week.days.map((day, di) => {
+    const isRest = day.t === 'rest';
+    const color = TYPE_COLOR[day.t] || '#888';
+    const tagBg = TYPE_BG[day.t] || 'var(--rest-bg)';
+
+    let bodyHTML = '';
+    if (!isRest) {
+      // Warm-up section
+      const wu = WARMUPS[day.t] || WARMUPS.cardio;
+      bodyHTML += `<div class="ex-section">🔥 Warm-Up (5–7 min)</div>`;
+      bodyHTML += wu.map((w, wi) => {
+        const ckey = `wu_${di}_${wi}`;
+        const checked = S.checks[wkey][ckey];
+        return `<div class="ex-item">
+          <div class="ex-check ${checked?'checked':''}" onclick="toggleCheck('${wkey}','${ckey}',this)">${checked?'✓':''}</div>
+          <div class="ex-info">
+            <div class="ex-name">${w.nm}</div>
+            <div class="ex-sets">${w.sets}</div>
+            ${w.tip?`<div class="ex-tip">${w.tip}</div>`:''}
+          </div>
+          <button class="ex-timer-btn" onclick="openTimer(30,'Warm-up Timer')"><span>⏱</span><span style="font-size:0.55rem">30s</span></button>
+        </div>`;
+      }).join('');
+
+      // Main workout section
+      const secLabel = day.t==='yoga'?'🧘 Yoga Flow':day.t==='cardio'?'🏃 Cardio':day.t==='active'?'🚶 Active':'💪 Main Workout';
+      const secClass = day.t==='yoga'?'yoga-label':day.t==='cardio'?'cardio-label':'strength-label';
+      bodyHTML += `<div class="ex-section ${secClass}">${secLabel}</div>`;
+      bodyHTML += day.exs.map((ex, ei) => {
+        const ckey = `ex_${di}_${ei}`;
+        const checked = S.checks[wkey][ckey];
+        const hasTimer = ex.timer > 0;
+        return `<div class="ex-item">
+          <div class="ex-check ${checked?'checked':''}" onclick="toggleCheck('${wkey}','${ckey}',this)">${checked?'✓':''}</div>
+          <div class="ex-info">
+            <div class="ex-name">${ex.nm}</div>
+            <div class="ex-sets">${ex.sets}</div>
+            ${ex.spec?`<div class="ex-spec">${ex.spec}</div>`:''}
+            ${ex.tip?`<div class="ex-tip">${ex.tip}</div>`:''}
+          </div>
+          ${hasTimer?`<button class="ex-timer-btn" onclick="openTimer(${ex.timer},'${ex.nm.replace(/'/g,'')}')"><span>⏱</span><span style="font-size:0.55rem">${ex.timer}s</span></button>`:''}
+        </div>`;
+      }).join('');
+
+      // Cool-down note
+      bodyHTML += `<div style="padding:0.75rem 1rem;font-size:0.72rem;color:var(--muted);font-style:italic;border-top:1px solid var(--border)">❄️ Cool-down: 3–5 min slow walk + gentle stretching</div>`;
+    } else {
+      bodyHTML = '<div style="padding:1rem;font-size:0.82rem;color:var(--muted);font-style:italic">Full rest day — no exercise. Recovery is when your body actually changes.</div>';
+    }
+
+    const startOpen = !isRest && di === 0;
+    return `<div class="day-card ${isRest?'rest':''} ${startOpen?'open':''}" id="dc_${di}">
+      <div class="day-card-header" onclick="toggleDayCard(${di})">
+        <div class="dch-dot" style="background:${color}"></div>
+        <div class="dch-info">
+          <div class="dch-day">${day.d}${day.isThu?' · Thursday active':''}</div>
+          <div class="dch-type">${day.label}</div>
+          ${day.k>0?`<div class="dch-meta">~${day.k} kcal</div>`:''}
+        </div>
+        <div class="dch-tag" style="background:${tagBg};color:${color}">${TYPE_LABEL[day.t]}</div>
+        ${!isRest?`<div class="dch-arrow" id="dca_${di}">▾</div>`:''}
+      </div>
+      <div class="day-card-body">${bodyHTML}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDayCard(di) {
+  const card = document.getElementById('dc_'+di);
+  const arrow = document.getElementById('dca_'+di);
+  card.classList.toggle('open');
+}
+
+function toggleCheck(wkey, ckey, el) {
+  if (!S.checks[wkey]) S.checks[wkey] = {};
+  const checked = !S.checks[wkey][ckey];
+  S.checks[wkey][ckey] = checked;
+  el.classList.toggle('checked', checked);
+  el.textContent = checked ? '✓' : '';
+  save();
+}
+
+function renderMarkDone(n) {
+  const isDone = S.done.has(n);
+  document.getElementById('markDoneBtn').className = 'mark-done-btn' + (isDone?' done':'');
+  document.getElementById('markDoneIcon').textContent = isDone ? '✓' : '○';
+  document.getElementById('markDoneTxt').textContent = isDone ? 'Week Complete!' : 'Mark Week Complete';
+}
+
+function toggleWeekDone() {
+  const week = phases[S.curPhase].weeks[S.curWeek];
+  if (S.done.has(week.n)) S.done.delete(week.n); else S.done.add(week.n);
+  save(); renderMarkDone(week.n); updateGlobalProg(); renderWeekList();
+}
+
+function renderWeekList() {
+  const ph = phases[S.curPhase];
+  document.getElementById('weekList').innerHTML = ph.weeks.map((w, wi) => {
+    const isDone = S.done.has(w.n);
+    return `<div class="week-item${isDone?' done':''}" onclick="openWeek(${S.curPhase},${wi})">
+      <div class="wi-num"><span>${w.n}</span>wk</div>
+      <div class="wi-info">
+        <div class="wi-title">${w.title}</div>
+        <div class="wi-meta">${w.sessions} days · ${w.thuUsed?'Thu active':'Thu rest'}</div>
+      </div>
+      <div class="wi-kcal">~${w.avgK}/day</div>
+      <div class="wi-chevron">›</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPhaseTabs() {
+  document.getElementById('phaseTabs').innerHTML = phases.map((ph, i) =>
+    `<button class="ptab${i===S.curPhase?' on':''}" onclick="switchPhase(${i})">${ph.title}</button>`
+  ).join('');
+}
+
+function switchPhase(i) {
+  S.curPhase = i;
+  renderPhaseTabs();
+  renderWeekList();
+}
+
+function updateGlobalProg() {
+  const pct = Math.round(S.done.size / 16 * 100);
+  const offset = 100.53 * (1 - pct/100);
+  document.getElementById('progRing').style.strokeDashoffset = offset;
+  document.getElementById('progPct').textContent = pct+'%';
+  document.getElementById('statDone').textContent = S.done.size;
+  const lastW = S.weights.length ? S.weights[S.weights.length-1].v : 85;
+  document.getElementById('statKg').textContent = lastW;
+}
+
+// ─── PROGRESS PAGE ──────────────────────────────────────────────────────────
+function logWeight() {
+  const v = parseFloat(document.getElementById('wtInput').value);
+  if (isNaN(v) || v < 30 || v > 200) return;
+  const now = new Date();
+  const label = now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  S.weights.push({v, label, ts: Date.now()});
+  document.getElementById('wtInput').value = '';
+  save(); renderProgress(); updateGlobalProg(); buildChart();
+}
+
+function delWeight(i) {
+  S.weights.splice(i,1); save(); renderProgress(); updateGlobalProg();
+}
+
+function renderProgress() {
+  const done = S.done.size, pct = Math.round(done/16*100);
+  document.getElementById('progBig').textContent = pct+'%';
+  document.getElementById('progDone').textContent = done;
+  document.getElementById('pWeeksLeft').textContent = 16-done;
+  // Estimate kcal burnt
+  let kcal = 0;
+  phases.forEach(ph => ph.weeks.forEach(w => { if(S.done.has(w.n)) kcal += parseInt(w.kcal.replace(/[^0-9]/g,'')) }));
+  document.getElementById('pKcalBurnt').textContent = kcal >= 1000 ? (kcal/1000).toFixed(1)+'k' : kcal;
+  // kg lost
+  if (S.weights.length) {
+    const lost = Math.max(0, 85 - S.weights[S.weights.length-1].v).toFixed(1);
+    document.getElementById('pKgLost').textContent = lost;
+  }
+  // Phase bars
+  const phaseData = [{name:'Foundation',weeks:[1,2,3,4]},{name:'Build',weeks:[5,6,7,8,9,10,11]},{name:'Push',weeks:[12,13,14,15,16]}];
+  document.getElementById('phaseBarWrap').innerHTML = phaseData.map(p => {
+    const doneInPhase = p.weeks.filter(n=>S.done.has(n)).length;
+    const phasePct = Math.round(doneInPhase/p.weeks.length*100);
+    return `<div class="phase-bar-label"><span>${p.name}</span><span>${doneInPhase}/${p.weeks.length} weeks</span></div>
+    <div class="phase-bar-outer"><div class="phase-bar-inner" style="width:${phasePct}%"></div></div>`;
+  }).join('');
+  // Build weight chart
+  buildChart();
+
+  // Weight history
+  document.getElementById('wtHistory').innerHTML = [...S.weights].reverse().map((w,i) =>
+    `<div class="wt-entry">
+      <span class="wt-entry-date">${w.label}</span>
+      <span class="wt-entry-val">${w.v} kg</span>
+      <button class="wt-entry-del" onclick="delWeight(${S.weights.length-1-i})">×</button>
+    </div>`
+  ).join('') || '<div style="font-size:0.75rem;color:var(--hint);padding:0.5rem">No weight entries yet.</div>';
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  renderPhaseTabs();
+  renderWeekList();
+  updateGlobalProg();
+  setTimeout(() => document.getElementById('splash').classList.add('gone'), 1200);
+  
+  // Show install banner if not already installed as standalone app
+  if (!isStandalone() && !localStorage.getItem('ios_seen')) {
+    document.getElementById('install-banner').style.display = 'flex';
+  }
+  
+  // Warn iOS users about the 7-day storage limit
+  const savedAt = localStorage.getItem('fp_saved_at');
+  if (isIOS() && savedAt) {
+    const daysSince = (Date.now() - parseInt(savedAt)) / 86400000;
+    if (daysSince > 6) {
+      const warn = document.createElement('div');
+      warn.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ff5f6d;color:#fff;font-size:0.78rem;padding:0.6rem 1rem;z-index:50;text-align:center';
+      warn.textContent = '⚠️ iOS may have cleared some data. Check your progress is intact.';
+      document.body.prepend(warn);
+      setTimeout(() => warn.remove(), 5000);
+    }
+  }
+});
+</script>
+
+<!-- iOS Install Guide -->
+<div id="ios-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:200;align-items:flex-end;justify-content:center">
+  <div style="background:#10101f;border:1px solid #2a2a42;border-radius:24px 24px 0 0;padding:1.75rem 1.5rem calc(2.5rem + env(safe-area-inset-bottom));width:100%;max-width:480px;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch">
+
+    <div style="width:36px;height:4px;background:#2a2a42;border-radius:2px;margin:0 auto 1.5rem"></div>
+    <div style="font-family:'Fraunces',serif;font-style:italic;font-size:1.6rem;color:#f0eeff;margin-bottom:0.4rem">Add FitPlan to iPhone</div>
+    <div style="font-size:0.8rem;color:#7878aa;line-height:1.7;margin-bottom:1.25rem">Gmail saves HTML files in a viewer that can't install apps. Here's the exact way to get it into Safari so you can install it.</div>
+
+    <!-- THE PROBLEM -->
+    <div style="background:rgba(255,94,109,0.08);border:1px solid rgba(255,94,109,0.25);border-radius:12px;padding:0.9rem 1rem;margin-bottom:1.25rem;display:flex;gap:0.75rem">
+      <div style="font-size:1.3rem;flex-shrink:0">🚫</div>
+      <div style="font-size:0.76rem;color:#ff9999;line-height:1.6"><strong>Gmail opens HTML files in its own viewer</strong> — this viewer does not have a Share button or Safari access. You need to move the file to Safari a different way.</div>
+    </div>
+
+    <!-- METHOD TITLE -->
+    <div style="font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:#7878aa;margin-bottom:0.75rem">The fix — 4 simple steps</div>
+
+    <!-- STEPS -->
+    <div style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.25rem">
+
+      <div style="background:#171726;border:1px solid #2a2a42;border-radius:12px;padding:0.9rem 1rem;display:flex;gap:0.9rem;align-items:flex-start">
+        <div style="min-width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff5f6d,#ff9966);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0">1</div>
+        <div>
+          <div style="font-weight:600;font-size:0.88rem;color:#f0eeff;margin-bottom:3px">Open the Gmail app → find this email</div>
+          <div style="font-size:0.74rem;color:#7878aa;line-height:1.55">Tap the <strong style="color:#f0eeff">HTML attachment</strong> (the file icon that says FitPlan). It will open in a preview.</div>
+        </div>
+      </div>
+
+      <div style="background:#171726;border:1px solid #2a2a42;border-radius:12px;padding:0.9rem 1rem;display:flex;gap:0.9rem;align-items:flex-start">
+        <div style="min-width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff5f6d,#ff9966);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0">2</div>
+        <div>
+          <div style="font-weight:600;font-size:0.88rem;color:#f0eeff;margin-bottom:3px">Tap the Share icon in the top-right corner</div>
+          <div style="font-size:0.74rem;color:#7878aa;line-height:1.55">In Gmail's attachment preview, look for the <strong style="color:#f0eeff">share/export icon</strong> (box with arrow) in the top-right. Tap it.</div>
+        </div>
+      </div>
+
+      <div style="background:#171726;border:1px solid #2a2a42;border-radius:12px;padding:0.9rem 1rem;display:flex;gap:0.9rem;align-items:flex-start">
+        <div style="min-width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff5f6d,#ff9966);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0">3</div>
+        <div>
+          <div style="font-weight:600;font-size:0.88rem;color:#f0eeff;margin-bottom:3px">Tap "Open in Safari" or "Copy to Safari"</div>
+          <div style="font-size:0.74rem;color:#7878aa;line-height:1.55">In the share sheet look for <strong style="color:#f0eeff">"Open in Safari"</strong>. If you don't see it, tap <strong style="color:#f0eeff">"More"</strong> and find Safari in the list. The file will open as a proper webpage in Safari.</div>
+        </div>
+      </div>
+
+      <div style="background:#171726;border:1px solid #2a2a42;border-radius:12px;padding:0.9rem 1rem;display:flex;gap:0.9rem;align-items:flex-start">
+        <div style="min-width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#ff5f6d,#ff9966);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0">4</div>
+        <div>
+          <div style="font-weight:600;font-size:0.88rem;color:#f0eeff;margin-bottom:3px">Now install from Safari</div>
+          <div style="font-size:0.74rem;color:#7878aa;line-height:1.55">Once open in Safari: tap the <strong style="color:#f0eeff">Share button ⬆</strong> at the bottom → scroll down → tap <strong style="color:#f0eeff">"Add to Home Screen"</strong> → tap <strong style="color:#f0eeff">Add</strong>. Done.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ALTERNATIVE -->
+    <div style="font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:#7878aa;margin-bottom:0.6rem">Alternative — if Gmail doesn't show "Open in Safari"</div>
+    <div style="background:#171726;border:1px solid #2a2a42;border-radius:12px;padding:0.9rem 1rem;margin-bottom:1.25rem">
+      <div style="font-size:0.76rem;color:#7878aa;line-height:1.7">
+        <div style="margin-bottom:0.5rem">① In Gmail, long-press the attachment → tap <strong style="color:#f0eeff">"Save to Files"</strong></div>
+        <div style="margin-bottom:0.5rem">② Open the <strong style="color:#f0eeff">Files app</strong> (blue folder icon on your iPhone)</div>
+        <div style="margin-bottom:0.5rem">③ Find the saved HTML file → long-press it → tap <strong style="color:#f0eeff">"Share"</strong></div>
+        <div>④ In the share sheet tap <strong style="color:#f0eeff">"Open in Safari"</strong> → then install as above</div>
+      </div>
+    </div>
+
+    <!-- STORAGE NOTE -->
+    <div style="background:rgba(255,169,77,0.08);border:1px solid rgba(255,169,77,0.22);border-radius:10px;padding:0.8rem 1rem;margin-bottom:1.5rem">
+      <div style="font-size:0.73rem;color:#ffa94d;line-height:1.6">💾 <strong>Important:</strong> Open FitPlan from your home screen at least once a week. iOS erases offline storage after 7 days of inactivity.</div>
+    </div>
+
+    <button onclick="document.getElementById('ios-modal').style.display='none';localStorage.setItem('ios_seen','1')" style="width:100%;padding:1rem;background:linear-gradient(135deg,#ff5f6d,#ff9966);border:none;border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:600;cursor:pointer">Got it!</button>
+  </div>
+</div>
+</body>
+</html>
